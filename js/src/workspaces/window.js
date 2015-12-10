@@ -52,7 +52,8 @@
       annotationLayerAvailable: true,
       annotationCreationAvailable: true,
       annoEndpointAvailable : false,
-      annotationState : 'annoOff',
+      //annotationState : 'annoOff',
+      annotationState : 'annoOn',
       fullScreenAvailable : true,
       displayLayout: true,
       layoutOptions : {
@@ -239,8 +240,11 @@
         }
       });
     },
-    
+
     bindAnnotationEvents: function() {
+
+      console.log("in bindAnnotationEvents");
+
       var _this = this;
       jQuery.subscribe('annotationCreated.'+_this.id, function(event, oaAnno, osdOverlay) {
         var annoID;
@@ -628,6 +632,9 @@
        Pass to any widgets that will use this list
        */
     getAnnotations: function() {
+
+      console.log("Windows:getAnnotations");
+
       //first look for manifest annotations
       var _this = this,
       url = _this.manifest.getAnnotationsListUrl(_this.currentCanvasID);
@@ -643,7 +650,7 @@
             //indicate this is a manifest annotation - which affects the UI
             value.endpoint = "manifest";
           });
-          jQuery.publish('annotationListLoaded.' + _this.id);
+          // TEMP!! jQuery.publish('annotationListLoaded.' + _this.id);
         });
       }
 
@@ -654,25 +661,40 @@
         options = $.viewer.annotationEndpoint.options; //grab anything from the config that should be passed directly to the endpoint
         // One annotation endpoint per window, the endpoint
         // is a property of the instance.
+        console.log("Windows:getAnnotations: checking endpoint");
         if ( _this.endpoint && _this.endpoint !== null ) {
           _this.endpoint.set('dfd', dfd);
+          console.log("Windows:getAnnotations: dfd already exists");
         } else {
+          console.log("Windows:getAnnotations: dfd set to local dfd");
           options.dfd = dfd;
           options.windowID = _this.id;
           options.parent = _this;
           _this.endpoint = new $[module](options);
         }
-        _this.endpoint.search({ "uri" : _this.currentCanvasID});
 
+        _this.endpoint.search({ "uri" : _this.currentCanvasID});
+        console.log("Windows:getAnnotations: endpoint searched: list  = " + _this.endpoint.annotationsList);
         dfd.done(function(loaded) {
           _this.annotationsList = _this.annotationsList.concat(_this.endpoint.annotationsList);
+          //_this.annotationsList = JSON.parse(_this.annotationsList);  //[jrl]
+
+
           // clear out some bad data
+          //console.log("Windows:getAnnotations: type of list.motivation = " + typeof _this.annotationsList.motivation );
           _this.annotationsList = jQuery.grep(_this.annotationsList, function (value, index) {
-            if (typeof value.on === "undefined") { 
+            console.log("index: " + index);
+            console.log("Windows:getAnnotations: value.motivation = " + value.motivation);
+            if (typeof value.on === "undefined") {
+              console.log("Windows:getAnnotations: test set to false");
               return false;
             }
+            console.log("Windows:getAnnotations: test set to true");
+
             return true; 
           });
+          console.log("Windows:getAnnotations: about to pubish annotationListLoaded and exit");
+          console.log("Windows:getAnnotations: and list = " + JSON.stringify(_this.annotationsList));
           jQuery.publish('annotationListLoaded.' + _this.id);
         });
       }

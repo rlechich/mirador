@@ -23,12 +23,17 @@
 
   $.OsdCanvasRenderer.prototype = {
     parseRegion: function(url) {
-      var regionString;
+
+       alert ("url = " + url);
+
+        var regionString;
       if (typeof url === 'object') {
         regionString = url.selector.value;
       } else {
         regionString = url.split('#')[1];
       }
+        alert("regionString = " + regionString);
+
       var regionArray = regionString.split('=')[1].split(',');
       return regionArray;
     },
@@ -130,10 +135,12 @@
       _this = this,
       annoTooltip = new $.AnnotationTooltip({"windowId" : _this.parent.windowId}), //pass permissions
       annotations = [];
-
+//alert("setTooltipContent: about to loop thru overlays");
       jQuery.each(overlays, function(index, overlay) {
+          //alert("overlay index: " + index);
        annotations.push(_this.getAnnoFromRegion(overlay.id)[0]);
      });
+
       api.set({'content.text' : annoTooltip.getViewer(annotations)});
       jQuery.publish('tooltipViewerSet.'+_this.parent.windowId);
     },
