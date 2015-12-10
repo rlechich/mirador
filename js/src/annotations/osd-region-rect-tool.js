@@ -121,6 +121,7 @@
     },
 
     createRectangle: function(mouseStart) {
+      console.log("in osd-region-rect-tool:createRectangle");
       var x = mouseStart.x,
       y = mouseStart.y,
       width = 0,

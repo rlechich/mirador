@@ -94,7 +94,8 @@
       'buttons' : {
         'bookmark' : true,
         'layout' : true,
-        'options' : false,
+        //'options' : false,
+        'options' : true,  // [jrl]
         'fullScreenViewer': true 
       }
       //'height': 25,
@@ -134,8 +135,19 @@
      *  }
      *  }
      **/
-    'annotationEndpoint': {},
+    //'annotationEndpoint': {},
+    'annotationEndpoint':
+        {
+        name: 'Ten Thousand Rooms',
+          // module: 'CatchEndpoint',  // this doesn't cause "is not a constructor" errfor
+          module: 'TenkrEndpoint',
+        options:
 
+          { 'url': 'http://localhost:5000/getAnnotations',
+          'storeId': 123,
+          'APIKey': '23983hf98j3f9283jf2983fj'
+          }
+        },
     'sharingEndpoint': {
       'url': '',
       'storeId': 123,

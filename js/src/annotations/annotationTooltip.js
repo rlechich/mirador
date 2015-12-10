@@ -49,6 +49,7 @@
     },
 
     getViewer: function(annotations) {
+        //alert("In annotationTooltip:getViewer: annotations count = " + annotations.length);
       var annoText,
       tags = [],
       _this = this,
@@ -75,20 +76,29 @@
         //if it is a manifest annotation, don't allow editing or deletion
         //otherwise, check annotation in endpoint
         var showUpdate = false;
-        if (annotation.endpoint !== 'manifest') {
-          showUpdate = annotation.endpoint.userAuthorize('update', annotation);
-        }
-        var showDelete = false;
-        if (annotation.endpoint !== 'manifest') {
-          showDelete = annotation.endpoint.userAuthorize('delete', annotation);
-        }
+          if (typeof annotation.endpoint !== "undefined") { // [jrl]
+              if (annotation.endpoint !== 'manifest') {
+                  showUpdate = annotation.endpoint.userAuthorize('update', annotation);
+              }
+              var showDelete = false;
+              if (annotation.endpoint !== 'manifest') {
+                  showDelete = annotation.endpoint.userAuthorize('delete', annotation);
+              }
+
+              //* TEMP: override [jrl] 12-9-15
+              showUpdate = true;
+              showDelete = true;
+
+          }
+
         htmlAnnotations.push({
           annoText : annoText,
           tags : tags,
           id : annotation['@id'],
           username : username,
-          showUpdate : showUpdate,
-          showDelete : showDelete
+          // temporary [jrl]
+          //showUpdate : showUpdate,
+          //showDelete : showDelete
         });
       });
 

@@ -38,7 +38,11 @@
       });
 
       jQuery.subscribe('annotationListLoaded.' + _this.windowId, function(event) {
+        console.log('annotationsLayer: about to call updateRenderer:annotationsList: ' + _this.parent.parent.annotationsList);
+        console.log("parent.parent.annotationsList = " + _this.parent.parent.annotationsList);
+
         _this.annotationsList = _this.parent.parent.annotationsList;
+        console.log("annotationsLayer: list is: " + JSON.stringify(_this.annotationsList));
         _this.updateRenderer();
       });
     },
@@ -67,7 +71,6 @@
       else if (this.mode === 'default') { this.enterDefault(); }
       else {}
     },
-
 
     enterDisplayAnnotations: function() {
       var _this = this;
