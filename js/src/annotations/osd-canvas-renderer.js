@@ -24,7 +24,7 @@
   $.OsdCanvasRenderer.prototype = {
     parseRegion: function(url) {
 
-       alert ("url = " + url);
+       //alert ("url = " + url);
 
         var regionString;
       if (typeof url === 'object') {
@@ -32,7 +32,7 @@
       } else {
         regionString = url.split('#')[1];
       }
-        alert("regionString = " + regionString);
+        //alert("regionString = " + regionString);
 
       var regionArray = regionString.split('=')[1].split(',');
       return regionArray;

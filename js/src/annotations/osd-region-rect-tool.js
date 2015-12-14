@@ -48,6 +48,7 @@
     },
     
     enterEditMode: function() {
+      console.log("osd-region-rect-tool:enterEditMode: ");
       var _this = this;
       this.setOsdFrozen(true);
       this.osdViewer.addHandler("canvas-drag", _this.startRectangle, {recttool: _this});

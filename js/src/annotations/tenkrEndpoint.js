@@ -84,12 +84,16 @@
     
     //Delete an annotation by endpoint identifier
     deleteAnnotation: function(annotationID, successCallback, errorCallback) {
+      console.log("annotationID in deleteAnnotation = " + annotationID);
       var _this = this;        
       jQuery.ajax({
-        url: '',
+        //url: 'http://localhost:5000/annotation',
+        url: annotationID,
         type: 'DELETE',
         dataType: 'json',
+        crossDomain: true,
         headers: { },
+        //data: "id=" + annotationID,
         contentType: "application/json; charset=utf-8",
         success: function(data) {
           if (typeof successCallback === "function") {
@@ -134,13 +138,13 @@
     create: function(oaAnnotation, successCallback, errorCallback) {
       // oaAnnotation comes in as a JSON object
       var _this = this;
-      alert("in Create Annotation");
+      //alert("in Create Annotation");
       console.log("Create this annotation: "+ JSON.stringify(oaAnnotation));
       oaAnnotation = this.getAnnotationInEndpoint(oaAnnotation);
       console.log("Create this annotation now: "+ JSON.stringify(oaAnnotation));
       jQuery.ajax({
-        //url: 'http://localhost:5000/annotation?annotation=' + JSON.stringify(oaAnnotation),
-        url: 'http://localhost:5000/annotation?' ,
+        //url: 'http://localhost:5000/annotations?annotation=' + JSON.stringify(oaAnnotation),
+        url: 'http://localhost:5000/annotations?' ,
         type: 'POST',
         dataType: 'json',
         crossDomain: true,
@@ -187,7 +191,7 @@
       oaAnnotation.motivation = oaAnnotation.motivation[0];
       delete oaAnnotation.on.scope;
       console.log("in getAnnotationInEndpoint - oaAnnotation = " + JSON.stringify(oaAnnotation));
-      alert("oaAnnotation.on: " + oaAnnotation.on);
+      //("oaAnnotation.on: " + oaAnnotation.on);
       return oaAnnotation;
     }
   };
