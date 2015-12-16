@@ -266,6 +266,7 @@
       });
 
       jQuery.subscribe('annotationUpdated.'+_this.id, function(event, oaAnno) {
+
         //first function is success callback, second is error callback
         _this.endpoint.update(oaAnno, function() {
           jQuery.each(_this.annotationsList, function(index, value) {

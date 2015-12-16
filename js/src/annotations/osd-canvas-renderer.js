@@ -32,7 +32,6 @@
       } else {
         regionString = url.split('#')[1];
       }
-        //alert("regionString = " + regionString);
 
       var regionArray = regionString.split('=')[1].split(',');
       return regionArray;
@@ -49,6 +48,7 @@
     },
 
     render: function() {
+
       var _this = this;
       _this.hideAll(),
       this.overlays = [];
@@ -417,6 +417,10 @@
     },
     
     annotationSaveEvent: function(event, api) {
+
+
+
+
       var _this = this,
       annoTooltip = new $.AnnotationTooltip({"windowId" : _this.parent.windowId}),
       selector = '#annotation-editor-'+_this.parent.windowId;
@@ -432,7 +436,9 @@
         var display = jQuery(this).parents('.annotation-tooltip'),
         id = display.attr('data-anno-id'),
         oaAnno = _this.getAnnoFromRegion(id)[0];
-                  
+
+         // alert("in annotationSaveEvent: annotation.on = " + oaAnno.on.toString());
+
         //check if new resourceText is empty??
         var tagText = jQuery(this).parents('.annotation-editor').find('.tags-editor').val(),
         resourceText = tinymce.activeEditor.getContent(),
