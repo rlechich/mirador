@@ -48,7 +48,8 @@
       //use options.uri
       jQuery.ajax({
         //url: 'http://localhost:5000/getAnnotations?canvas_id=http://manifests.ydc2.yale.edu/canvas/4ada1a56-c2f1-4a8e-8543-9c8045bd4ba8', //+ CanvasID,
-        url: 'http://localhost:5000/getAnnotations?canvas_id=' + this.parent.currentCanvasID,
+        //url: 'http://localhost:5000/getAnnotations?canvas_id=' + this.parent.currentCanvasID,
+        url: 'http://localhost:5000/getAnnotations?canvas_id=' + _parent.currentCanvasID,
         type: 'GET',
         dataType: 'json',   // this will cause a CORS pre-flight
         crossDomain: true,
@@ -62,15 +63,11 @@
             successCallback(data);
           } else {
             jQuery.each(data, function(index, value) {
-              //_this.annotationsList.push(_this.getAnnotationInOA(value));
-              //_this.annotationsList.push(JSON.parse(_this.getAnnotationInOA(value)));
               _this.annotationsList.push(_this.getAnnotationInOA(JSON.parse(value)));
             });
 
             console.log("Endpoint::search: _this.annotationsList = " + JSON.stringify(_this.annotationsList));
             _this.dfd.resolve(true);
-            //jQuery.publish('AnnotationListLoaded.'+_this.windowID, _this.annotationsList);
-            //jQuery.publish('annotationListLoaded.'+_this.windowID, _this.annotationsList);
           }
         },
         error: function(x,e) {
@@ -84,11 +81,13 @@
     
     //Delete an annotation by endpoint identifier
     deleteAnnotation: function(annotationID, successCallback, errorCallback) {
+      console.log("annotationID in deleteAnnotation = " + annotationID);
       var _this = this;        
       jQuery.ajax({
-        url: '',
+        url: annotationID,
         type: 'DELETE',
         dataType: 'json',
+        crossDomain: true,
         headers: { },
         contentType: "application/json; charset=utf-8",
         success: function(data) {
@@ -106,15 +105,16 @@
     
     //Update an annotation given the OA version
     update: function(oaAnnotation, successCallback, errorCallback) {
+      //alert("in tenkr:update");
       var annotation = this.getAnnotationInEndpoint(oaAnnotation),
       _this = this;
-      
       jQuery.ajax({
-        url: '',
-        type: 'POST',
+        url: 'http://localhost:5000/annotation?',
+        // shouldn't method be PUT?
+        type: 'PUT',
         dataType: 'json',
         headers: { },
-        data: '',
+        data: JSON.stringify(annotation),
         contentType: "application/json; charset=utf-8",
         success: function(data) {
           if (typeof successCallback === "function") {
@@ -134,13 +134,13 @@
     create: function(oaAnnotation, successCallback, errorCallback) {
       // oaAnnotation comes in as a JSON object
       var _this = this;
-      alert("in Create Annotation");
+      //alert("in Create Annotation");
       console.log("Create this annotation: "+ JSON.stringify(oaAnnotation));
       oaAnnotation = this.getAnnotationInEndpoint(oaAnnotation);
       console.log("Create this annotation now: "+ JSON.stringify(oaAnnotation));
       jQuery.ajax({
-        //url: 'http://localhost:5000/annotation?annotation=' + JSON.stringify(oaAnnotation),
-        url: 'http://localhost:5000/annotation?' ,
+        //url: 'http://localhost:5000/annotations?annotation=' + JSON.stringify(oaAnnotation),
+        url: 'http://localhost:5000/annotations?' ,
         type: 'POST',
         dataType: 'json',
         crossDomain: true,
@@ -171,13 +171,9 @@
 
     //Convert Endpoint annotation to OA
     getAnnotationInOA: function(annotation) {
-        //alert("getAnnotationInOA:on = " + annotation.on);
-        if (!annotation.on.startsWith("http://")) {
-          annotation.on = annotation.on.replace(/=>/g,":");
-          //alert("no hashrocket: getAnnotationInOA:on = " + annotation.on);
-          annotation.on = JSON.parse(annotation.on);
-          //alert("annotation.on JSON.parsed ok");
-        }
+      annotation.on = annotation.on.replace(/=>/g,":");
+      annotation.on = JSON.parse(annotation.on);
+      annotation.motivation = annotation.motivation.split();
       return annotation;
     },
 
@@ -185,9 +181,11 @@
     // annotation is a JSON object
     getAnnotationInEndpoint: function(oaAnnotation) {
       oaAnnotation.motivation = oaAnnotation.motivation[0];
-      delete oaAnnotation.on.scope;
+      // on.scope is not standard, but if we remove it here we need to remote where it is set in osd-canvas-renderer:render->AnnotationSaveEvent
+      // we have the xywh values at the end of the on value element
+      //delete oaAnnotation.on.scope; //needed in annotationSaveEvent
       console.log("in getAnnotationInEndpoint - oaAnnotation = " + JSON.stringify(oaAnnotation));
-      alert("oaAnnotation.on: " + oaAnnotation.on);
+      //("oaAnnotation.on: " + oaAnnotation.on);
       return oaAnnotation;
     }
   };
