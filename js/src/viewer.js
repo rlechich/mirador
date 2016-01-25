@@ -38,6 +38,8 @@
     init: function() {
       var _this = this;
 
+      alert("in viewer function from index.html");
+
       //add background and positioning information on the root element that is provided in config
       var backgroundImage = _this.buildPath + _this.imagesPath + 'debut_dark.png';
       this.element.css('background-color', '#333').css('background-image','url('+backgroundImage+')').css('background-position','left top')

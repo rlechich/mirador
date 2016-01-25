@@ -21,6 +21,9 @@
     $.ManifestsPanel.prototype = {
 
         init: function() {
+
+            alert("entering ManifestsPanel init");
+
             this.element = jQuery(this.template({
                 showURLBox : this.parent.showAddFromURLBox
             })).appendTo(this.appendTo);

@@ -4,60 +4,96 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="stylesheet" type="text/css" href="build/mirador/css/mirador-combined.css">
     <title>Mirador Viewer</title>
+    <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
     <style type="text/css">
-     #viewer {  width: 100%; height: 100%; }
+        #viewer {  width: 100%; height: 100%; }
     </style>
 </head>
 <body>
-    <div id="viewer"></div>
+<div id="viewer"></div>
 
-    <script src="build/mirador/mirador.js"></script>
-    <script type="text/javascript">
+<script src="build/mirador/mirador.js"></script>
+<script type="text/javascript">
 
-     $(function() {
-         var anno_token;
+    //var tgToken;
 
-         console.log("In index.html")
+    //alert("index.html");
+    $(function() {
 
+        //continue_on();
 
-         Mirador({
-             "id": "viewer",
-             "layout": "1x1",
-             "data": [
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48309543", "location": "Harvard University"}, // Harvard Scroll
-                 { "manifestUri": "http://dms-data.stanford.edu/data/manifests/Walters/qm670kv1873/manifest.json", "location": "Stanford University"},
-                 { "manifestUri": "http://dms-data.stanford.edu/data/manifests/Stanford/ege1/manifest.json", "location": "Stanford University"},
-                 { "manifestUri": "http://dms-data.stanford.edu/data/manifests/BnF/jr903ng8662/manifest.json ", "location": "Stanford University"},
-                 { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/Admont23", "location": "Yale University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:5981093", "location": "Harvard University"},
-                 { "manifestUri": "http://dams.llgc.org.uk/iiif/4574752/manifest.json", "location": "National Library of Wales"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/via:olvwork576793", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:14033171", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:46909368", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:18259372", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/drs:48331776", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:299843", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:213052", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:169892", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:304136", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:311074", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:200515", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:320161", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:198021", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:165773", "location": "Harvard University"},
-                 { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:320567", "location": "Harvard University"},
-                 { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/Admont43", "location": "Yale University"},
-                 { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/BeineckeMS10", "location": "Yale University"},
-                 { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/CambridgeTrinityCollegeMSR_3_2", "location": "Yale University"},
-                 { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/BodleianMSBodley113", "location": "Yale University"},
-                 { "manifestUri": "http://iiif.biblissima.fr/manifests/ark:/12148/btv1b84539771/manifest.json", "location":'BnF' },
-                 { "manifestUri": "http://iiif.biblissima.fr/manifests/ark:/12148/btv1b10500687r/manifest.json", "location": 'BnF'},
-                 { "manifestUri": "http://www.e-codices.unifr.ch/metadata/iiif/sl-0002/manifest.json", "location": 'e-codices'},
-                 { "manifestUri": "http://www.e-codices.unifr.ch/metadata/iiif/bge-cl0015/manifest.json", "location": 'e-codices'}
-             ],
+        // invoke login
+        // - bring up the tenkr server login screen as a separate tab or window
+        // - set focus on this screen
+        // - server: in omniauth_callback generate and store in user table a uuid as token
+        // - send back the token
+        // - close the login tab / window, back in Mirador call access_token and continue
+
+        window.addEventListener("message", receiveMessage, false);
+        var loginWindow = window.open("http://localhost:5000/loginToServer","login Window", "_self");
+        console.log("back from login window");
+        }
+    )
+
+    function receiveMessage(event) {
+        message = event.data;
+        alert("message = " + message);
+        var tkg = JSON.parse(message);
+        tgToken = tkg.tgToken;
+        alert("tgToken after JSON parse: " + tgToken);
+
+        //call getToken() to semi-comply with IIIF Auth spec.  This will use the tgToken to access the bearer token
+        // All subsequent Ajax data calls should use the bearer token as a parameter for the server to authenticate
+        continue_on();
+    }
+
+    //Test sending/receiving token as custom header
+    console.log("doing access token ajax call");
+    var getToken = function() {
+        jQuery.ajax({
+            type: 'GET',
+            url: "http://localhost:5000/getAccessToken",
+            dataType: 'jsonp',  //use jsonp data type in order to perform cross domain ajax via cookies
+            success: gotToken,
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+        console.log("back from access token ajax call");
+        // end acccess token test
+    };
+
+    var gotToken = function(data){
+        console.log("In gotToken / success function");
+        console.log ("returned data: " + data);
+        /* parse JSON */
+        console.log ("parsed returned data.accessToken: " + data.accessToken);
+        console.log ("parsed returned data.tokenType: " + data.tokenType);
+        accesssToken = data.accessToken;
+    };
+
+    function continue_on(){
+        var anno_token;
+        console.log("In index/continue_on")
+        Mirador({
+            "id": "viewer",
+            "layout": "1x1",
+            "data": [
+               { "manifestUri": "http://oculus-dev.harvardx.harvard.edu/manifests/huam:320567", "location": "Harvard University"},
+                { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/Admont43", "location": "Yale University"},
+                { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/BeineckeMS10", "location": "Yale University"},
+                { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/CambridgeTrinityCollegeMSR_3_2", "location": "Yale University"},
+                { "manifestUri": "http://manifests.ydc2.yale.edu/manifest/BodleianMSBodley113", "location": "Yale University"},
+                { "manifestUri": "http://iiif.biblissima.fr/manifests/ark:/12148/btv1b84539771/manifest.json", "location":'BnF' },
+                { "manifestUri": "http://iiif.biblissima.fr/manifests/ark:/12148/btv1b10500687r/manifest.json", "location": 'BnF'},
+                { "manifestUri": "http://www.e-codices.unifr.ch/metadata/iiif/sl-0002/manifest.json", "location": 'e-codices'},
+                { "manifestUri": "http://www.e-codices.unifr.ch/metadata/iiif/bge-cl0015/manifest.json", "location": 'e-codices'}
+            ],
             "windowObjects": []
-         });
-     });
-    </script>
+        });
+    };
+
+</script>
+
 </body>
 </html>

@@ -43,6 +43,9 @@
           zoomLevel:        null
         };
       }
+
+      alert("in ImageView: this.canvasID = " + this.canvasID);
+
       this.currentImg = this.imagesList[this.currentImgIndex];
       this.element = jQuery(this.template()).appendTo(this.appendTo);
       this.elemAnno = jQuery('<div/>')

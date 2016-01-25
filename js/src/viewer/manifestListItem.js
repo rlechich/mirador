@@ -26,7 +26,10 @@
 
   $.ManifestListItem.prototype = {
 
+
+
     init: function() {
+      //alert("in ManifestListItem init");
       var _this = this;
       //need a better way of calculating this because JS can't get width and margin of hidden elements, so must manually set that info
       //ultimately use 95% of space available, since sometimes it still displays too many images
@@ -139,6 +142,7 @@
           currentFocus: 'ImageView'
         };
         $.viewer.workspace.addWindow(windowConfig);
+        //alert("in ManifestListItem: currentCanvasID = " + currentCanvasID);
       });
 
       jQuery.subscribe('manifestPanelWidthChanged', function(event, newWidth){

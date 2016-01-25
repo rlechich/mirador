@@ -14,9 +14,13 @@
  * getAnnotationInOA(endpointAnnotation)
  * getAnnotationInEndpoint(oaAnnotation)
  */
+//var accessToken = "tenkrToken";
+
 (function($){
 
-  console.log("Initing Endpoint");
+  console.log("Initing Endpoint:");
+  //console.log("tgToken = " + tgToken);
+  //alert("tgToken = " + tgToken);
 
   $.TenkrEndpoint = function(options) {
 
@@ -27,17 +31,42 @@
       parent:          null
     }, options);
 
+    //Test sending/receiving token as custom header
+    console.log("doing access token ajax call");
+    var getToken = function() {
+      jQuery.ajax({
+        type: 'GET',
+        url: "http://localhost:5000/getAccessToken",
+        dataType: 'jsonp',  //use jsonp data type in order to perform cross domain ajax via cookies
+        success: gotToken,
+        error: function (jqXHR, textStatus, errorThrown) {
+          alert(errorThrown);
+        }
+      });
+      console.log("back from access token ajax call");
+      // end acccess token test
+    };
+
+    var gotToken = function(data){
+      console.log("In gotToken / success function");
+      console.log ("returned data: " + data);
+      /* parse JSON */
+      console.log ("parsed returned data.accessToken: " + data.accessToken);
+      console.log ("parsed returned data.tokenType: " + data.tokenType);
+      accesssToken = data.accessToken;
+    };
+
+
     this.init();
   };
 
   $.TenkrEndpoint.prototype = {
     init: function() {
-      //whatever initialization your endpoint needs       
+      //whatever initialization your endpoint needs
     },
 
     //Search endpoint for all annotations with a given URI in options
     search: function(options, successCallback, errorCallback) {
-
       this.annotationsList = []; //clear out current list
       var _this = this;
 
@@ -47,15 +76,16 @@
 
       //use options.uri
       jQuery.ajax({
-        //url: 'http://localhost:5000/getAnnotations?canvas_id=http://manifests.ydc2.yale.edu/canvas/4ada1a56-c2f1-4a8e-8543-9c8045bd4ba8', //+ CanvasID,
-        //url: 'http://localhost:5000/getAnnotations?canvas_id=' + this.parent.currentCanvasID,
+        //this will now return an array of only annotation_ids and service blocks
+        //subsequent "success" process will iterate and authenticate as needed
         url: 'http://localhost:5000/getAnnotations?canvas_id=' + _parent.currentCanvasID,
         type: 'GET',
         dataType: 'json',   // this will cause a CORS pre-flight
         crossDomain: true,
-        //headers: { },
+        headers: {"auth-token": "tenkrToken"},
         data: { },
         contentType: "application/json; charset=utf-8",
+        Connection: "keep-alive",
         success: function(data) {
           console.log("Endpoint search: success");
           //check if a function has been passed in, otherwise, treat it as a normal search
@@ -64,6 +94,9 @@
           } else {
             jQuery.each(data, function(index, value) {
               _this.annotationsList.push(_this.getAnnotationInOA(JSON.parse(value)));
+              // check all returned annotations; if it has a service block authn it; save service url if not seen
+              //_this.preAuthAnnos(_this.getAnnotationInOA(JSON.parse(value)));
+              //alert( "key returned from anno is #{index}");
             });
 
             console.log("Endpoint::search: _this.annotationsList = " + JSON.stringify(_this.annotationsList));
@@ -187,7 +220,15 @@
       console.log("in getAnnotationInEndpoint - oaAnnotation = " + JSON.stringify(oaAnnotation));
       //("oaAnnotation.on: " + oaAnnotation.on);
       return oaAnnotation;
+    },
+
+    preAuthAnnos: function(annotation) {
+      alert("in preauth");
+      //for (var anno in annotationsList) {
+        console.log("In preAuth: annotation = " + annotation);
+      //}
     }
+
   };
 
 }(Mirador));

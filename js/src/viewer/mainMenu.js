@@ -36,6 +36,8 @@
             //.width(this.mainMenuWidth)
             .appendTo(this.appendTo);
 
+            alert("about to append in mainMenu");
+
             this.element.append(this.template({
                 mainMenuCls: this.mainMenuCls,
                 showBookmark : this.parent.mainMenuSettings.buttons.bookmark,
