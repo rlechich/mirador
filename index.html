@@ -44,15 +44,17 @@
 
         //call getToken() to semi-comply with IIIF Auth spec.  This will use the tgToken to access the bearer token
         // All subsequent Ajax data calls should use the bearer token as a parameter for the server to authenticate
+        getToken(tgToken);
         continue_on();
     }
 
-    //Test sending/receiving token as custom header
-    console.log("doing access token ajax call");
-    var getToken = function() {
+    var getToken = function(tgToken) {
+        console.log("doing access token ajax call");
+        urlGetToken = "http://localhost:5000/getAccessToken?tgToken=" + tgToken;
+        alert("urlGetToken: " + urlGetToken);
         jQuery.ajax({
             type: 'GET',
-            url: "http://localhost:5000/getAccessToken",
+            url: urlGetToken,
             dataType: 'jsonp',  //use jsonp data type in order to perform cross domain ajax via cookies
             success: gotToken,
             error: function (jqXHR, textStatus, errorThrown) {
@@ -64,11 +66,14 @@
     };
 
     var gotToken = function(data){
+        var bearerToken = '';
         console.log("In gotToken / success function");
         console.log ("returned data: " + data);
         /* parse JSON */
         console.log ("parsed returned data.accessToken: " + data.accessToken);
         console.log ("parsed returned data.tokenType: " + data.tokenType);
+        if (data.tokenType = "Bearer") bearerToken = data.accessToken;
+        alert('bearer token = ' + bearerToken);
         accesssToken = data.accessToken;
     };
 
